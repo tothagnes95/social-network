@@ -1,13 +1,11 @@
 package com.example.socialnetwork.services;
 
-import com.example.socialnetwork.models.DTOs.ErrorDTO;
+import com.example.socialnetwork.exceptions.ResourceNotFoundException;
+import com.example.socialnetwork.exceptions.UserDetailsTakenException;
 import com.example.socialnetwork.models.DTOs.UserDTO;
 import com.example.socialnetwork.models.User;
 import com.example.socialnetwork.repositories.UserRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import javax.servlet.http.HttpServletRequest;
 
 @Service
 public class UserServiceImp implements UserService{
@@ -17,19 +15,19 @@ public class UserServiceImp implements UserService{
         this.userRepository = userRepository;
     }
 
-    public ResponseEntity<?> checkUserDetails(UserDTO userDTO, HttpServletRequest request){
+    public UserDTO checkUserDetails(UserDTO userDTO){
         if(userDTO.getUsername() == null || userDTO.getEmail() == null ||userDTO
                 .getPassword() == null) {
-            return ResponseEntity.status(400).body(new ErrorDTO(request.getRequestURI(), "Please provide all user data!"));
+            throw new ResourceNotFoundException("Password, username and email are required");
         } else if (userRepository.existsUserByUsername(userDTO.getUsername())) {
-            return ResponseEntity.status(400).body(new ErrorDTO(request.getRequestURI(), "Username is taken, please select another one!"));
+            throw new UserDetailsTakenException("Username is taken, please select another one!");
         } else if (userRepository.existsUserByPassword(userDTO.getPassword())) {
-            return ResponseEntity.status(400).body(new ErrorDTO(request.getRequestURI(), "Password is taken, please select another one!"));
+            throw new UserDetailsTakenException("Password is taken, please select another one!");
         } else if (userRepository.existsUserByEmail(userDTO.getEmail())){
-            return ResponseEntity.status(400).body(new ErrorDTO(request.getRequestURI(), "Email is taken, please select another one!"));
+            throw new UserDetailsTakenException("Email is taken, please select another one!");
         }
         User user = new User(userDTO.getUsername(), userDTO.getPassword(), userDTO.getEmail());
         userRepository.save(user);
-        return ResponseEntity.status(200).body(userDTO);
+        return userDTO;
     }
 }

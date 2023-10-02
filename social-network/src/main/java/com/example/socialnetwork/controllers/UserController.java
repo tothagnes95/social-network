@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-
 @RestController
 public class UserController {
     private UserService userService;
@@ -18,7 +16,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registration (@RequestBody UserDTO userDTO, HttpServletRequest request){
-         return userService.checkUserDetails(userDTO, request);
+    public ResponseEntity<UserDTO> registration (@RequestBody UserDTO userDTO){
+         return ResponseEntity.status(200).body(userService.checkUserDetails(userDTO));
     }
 }

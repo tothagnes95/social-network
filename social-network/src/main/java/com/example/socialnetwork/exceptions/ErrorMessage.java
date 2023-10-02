@@ -1,16 +1,14 @@
-package com.example.socialnetwork.models.DTOs;
-
-import org.springframework.web.context.request.WebRequest;
+package com.example.socialnetwork.exceptions;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class ErrorDTO {
+public class ErrorMessage {
     private String endpoint;
     private String message;
     private String time;
 
-    public ErrorDTO (String endpoint, String message){
+    public ErrorMessage(String endpoint, String message) {
         this.endpoint = endpoint;
         this.message = message;
         DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -35,9 +33,5 @@ public class ErrorDTO {
 
     public String getTime() {
         return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
     }
 }

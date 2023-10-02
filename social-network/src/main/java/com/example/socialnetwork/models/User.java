@@ -5,13 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name="users")
+@Table(name="usersTable")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "userId")
     private Long id;
+    @Column(name = "name")
     private String username;
     private String password;
+
     private String email;
     @ManyToMany
     private List<User> users;
@@ -57,5 +60,13 @@ public class User {
 
     public void setUsers(List<User> users) {
         this.users = users;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }
