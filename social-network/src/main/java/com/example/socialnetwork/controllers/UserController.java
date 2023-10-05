@@ -1,5 +1,6 @@
 package com.example.socialnetwork.controllers;
 
+import com.example.socialnetwork.security.jwt.JwtDTO;
 import com.example.socialnetwork.services.UserService;
 import com.example.socialnetwork.models.DTOs.UserDTO;
 import org.springframework.http.ResponseEntity;
@@ -18,5 +19,10 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<UserDTO> registration (@RequestBody UserDTO userDTO){
          return ResponseEntity.status(200).body(userService.checkUserDetails(userDTO));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<JwtDTO> login (@RequestBody UserDTO userDTO) {
+        return ResponseEntity.status(200).body(userService.checkUserDetailsInDB(userDTO));
     }
 }
