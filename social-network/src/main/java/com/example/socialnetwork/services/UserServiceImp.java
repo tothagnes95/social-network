@@ -9,17 +9,20 @@ import com.example.socialnetwork.security.LoginUtils;
 import com.example.socialnetwork.security.jwt.JwtDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImp implements UserService{
     private UserRepository userRepository;
     private LoginUtils loginUtils;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImp (UserRepository userRepository, LoginUtils loginUtils){
+    public UserServiceImp (UserRepository userRepository, LoginUtils loginUtils, PasswordEncoder passwordEncoder){
         this.userRepository = userRepository;
         this.loginUtils = loginUtils;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User findUserByUsername (String username){
@@ -38,31 +41,25 @@ public class UserServiceImp implements UserService{
 
     public UserDTO checkUserDetails(UserDTO userDTO){
         checkUserDetailsNull(userDTO);
+        System.out.println("register pw: " + userDTO.getPassword());
+        String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
+        System.out.println("register encoded pw: " + encodedPassword);
         if (userRepository.existsUserByUsername(userDTO.getUsername())) {
             throw new UserDetailsTakenException("Username is taken, please select another one!");
-        } else if (userRepository.existsUserByPassword(userDTO.getPassword())) {
+        } else if (userRepository.existsUserByPassword(encodedPassword)) {
             throw new UserDetailsTakenException("Password is taken, please select another one!");
         } else if (userRepository.existsUserByEmail(userDTO.getEmail())){
             throw new UserDetailsTakenException("Email is taken, please select another one!");
         }
-        User user = new User(userDTO.getUsername(), userDTO.getPassword(), userDTO.getEmail());
+
+        User user = new User(userDTO.getUsername(), encodedPassword, userDTO.getEmail());
         userRepository.save(user);
         return userDTO;
     }
 
+
     public JwtDTO checkUserDetailsInDB(UserDTO userDTO) {
         checkUserDetailsNull(userDTO);
-        User user;
-        if(!userRepository.existsUserByUsername(userDTO.getUsername())){
-            throw new ResourceNotFoundException("Incorrect Username");
-        } else {
-            user = findUserByUsername(userDTO.getUsername());
-        }
-        if(!user.getPassword().equals(userDTO.getPassword())) {
-            throw new ResourceNotFoundException("Incorrect Password");
-        } else if(!user.getEmail().equals(userDTO.getEmail())){
-            throw new ResourceNotFoundException("Incorrect Email");
-        }
         return loginUtils.login(userDTO);
     }
 }

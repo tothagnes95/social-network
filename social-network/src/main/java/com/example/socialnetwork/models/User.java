@@ -9,16 +9,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
-@Table(name="usersTable")
+@Table(name="users")
 public class User implements UserDetails {
 
     private static final Long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "userId")
     private Long id;
-    @Column(name = "name")
     private String username;
     private String password;
 
